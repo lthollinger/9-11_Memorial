@@ -2,6 +2,9 @@ import subprocess
 import os
 import math
 import random
+import pandas as pd
+from nameparser import HumanName
+
 
 
 def createSignagePDF(row):
@@ -71,6 +74,17 @@ def createSignagePDF(row):
     # DONT WIPE OUTPUT AUX --> causes border to become off centered on next render
     # os.unlink('output.aux')
 
+def displayName(info, name):
+    print(name) if name!=None else print()
+    print(f'''
+    First: {info['first']}
+    Middle: {info['middle']}
+    Last: {info['last']}
+    Suffix: {info['suffix']}
+    Nickname: {info['nickname']}
+    \n\n
+    ''')
+
 
 def main():
     """
@@ -81,7 +95,21 @@ def main():
     Save file to specific location
     """
 
-    createSignagePDF("test")
+    NOIs = ["Theresa \"Ginger\" Risco Nelson", "James M. Gartenberg", "Jose Angel Martinez, Jr.", "Lucas \"Goat\" Trent Hollinger Jr. III"]
+    victims = pd.read_csv('./data/2001.csv')
+
+    for i, name in enumerate(victims.loc[victims['Name'].str.contains("de "), :]['Name']):
+        info = HumanName(name).as_dict()
+
+        print(f'''
+        Name: {name}
+        First: {info['first']}
+        Middle: {info['middle']}
+        Last: {info['last']}
+        Suffix: {info['suffix']}
+        Nickname: {info['nickname']}
+        \n\n
+        ''')
 
 
 if __name__ == "__main__":

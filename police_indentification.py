@@ -38,14 +38,14 @@ def rectifyName(name):
         "Chief",
         "Lt.",
         "Capt.",
-        "Jr.",
+        #"Jr.",
         "Paramedic",
-        "I",
-        "II",
-        "III",
-        "IV",
-        "Jr",
-        "Sr",
+        #"I",
+        #II",
+        #"III",
+        #"IV",
+        #"Jr",
+        #"Sr",
     ]
     arr = [c for c in arr if c not in removetags]
     arr = [i.title() for i in arr]
