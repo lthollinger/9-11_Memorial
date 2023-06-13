@@ -1,0 +1,40 @@
+
+            \documentclass{article}
+            \usepackage{tikz}
+            \usetikzlibrary{calc}
+
+            \usepackage{fontspec}
+            \usepackage{xcolor}
+            \usepackage{pagecolor}
+
+            \setmainfont{CrimsonText-Regular}
+            \pagecolor{white}
+            \color{black}
+
+            \begin{document}
+            \begin{tikzpicture}[overlay, remember picture]
+            \draw[line width=2pt] ($(current page.north west)+(1cm,-1cm)$) rectangle ($(current page.south east)+(-1cm,1cm)$);
+            \end{tikzpicture}
+            \thispagestyle{empty}
+            \begin{center}
+            \vspace{1.5cm}
+            {\fontsize{100pt}{120pt}\selectfont Joey94}\\
+            \vspace{1cm}
+            {\fontsize{40pt}{48pt}\selectfont B.}\\
+            \vspace{1cm}
+            {\fontsize{100pt}{120pt}\selectfont Smith}\\
+            \vspace{2cm}
+
+
+            {\fontsize{36pt}{43.2pt}\selectfont Aged 30}\\
+            \vspace{0.25cm}
+            {\fontsize{36pt}{43.2pt}\selectfont Denver, Colorado}\\
+            \vspace{2cm}
+
+
+            {\fontsize{24pt}{28.8pt}\selectfont Sommolier}\\
+            \vspace{0.25cm}
+            {\fontsize{24pt}{28.8pt}\selectfont Arlington}
+            \end{center}
+            \end{document}
+            
