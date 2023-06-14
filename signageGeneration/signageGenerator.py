@@ -4,17 +4,22 @@ import math
 import random
 import pandas as pd
 from nameparser import HumanName
+import time
 
 
 def createSignagePDF(row):
+    name_info = HumanName(row["Name"])
+
     data = {
-        "FIRST_NAME": f"Joey{random.randint(0, 200)}",
-        "MIDDLE_NAME": "B.",
-        "LAST_NAME": "Smith",
-        "AGE": "30",
-        "ORIGIN": "Denver, Colorado",
-        "JOB": "Sommolier",
-        "PLACE": "Arlington",
+        "FIRST_NAME": f"{name_info['first']}",
+        "MIDDLE_NAME": f"{name_info['middle']}",
+        "LAST_NAME": f"{name_info['last']} {' '.join(name_info['suffix'])}",
+        "AGE": row["Age"],
+        "ORIGIN": f"{row['Town/City']}, {row['Country']}"
+        if (len(row["Town/City"]) > 0)
+        else f"{row['Country']}",
+        "JOB": f"{row['Job']}".title(),
+        "PLACE": f"{row['Place']}",
     }
     signage = r"""
             \documentclass{article}
@@ -59,16 +64,22 @@ def createSignagePDF(row):
 
     signage = signage % data
 
-    with open(f"output.tex", "w") as f:
+    # fmt: off
+    with open("./signageGeneration/signageOutput/document.tex", "w",) as f:
         f.write(signage)
         f.close()
+    # fmt: on
 
     # janky asl but it's too late at night for me to look into the PATH and environment when this works
-    cmd = r"C:\Users\lucas\AppData\Local\Programs\MiKTeX\miktex\bin\x64\xelatex.exe output.tex"
-    proc = subprocess.Popen(cmd, shell=True, env=os.environ)
-    proc.communicate()
+    # cmd = r"C:\Users\lucas\AppData\Local\Programs\MiKTeX\miktex\bin\x64\xelatex.exe output.tex"
+    # proc = subprocess.Popen(cmd, shell=True, env=os.environ)
+    # proc.communicate()
+    time.sleep(0.5)
+    output_dir = "signageGeneration/signageOutput"
+    command = f"xelatex -jobname=result -output-directory={output_dir} ./signageOutput/document.tex"
 
-    os.unlink("output.log")
+    proc = subprocess.Popen(command)
+    proc.communicate()
 
     # DONT WIPE OUTPUT AUX --> causes border to become off centered on next render
     # os.unlink('output.aux')
@@ -97,30 +108,8 @@ def main():
     Save file to specific location
     """
 
-    NOIs = [
-        'Theresa "Ginger" Risco Nelson',
-        "James M. Gartenberg",
-        "Jose Angel Martinez, Jr.",
-        'Lucas "Goat" Trent Hollinger Jr. III',
-    ]
     victims = pd.read_csv("./data/2001.csv")
-
-    for i, name in enumerate(
-        victims.loc[victims["Name"].str.contains("de "), :]["Name"]
-    ):
-        info = HumanName(name).as_dict()
-
-        print(
-            f"""
-        Name: {name}
-        First: {info['first']}
-        Middle: {info['middle']}
-        Last: {info['last']}
-        Suffix: {info['suffix']}
-        Nickname: {info['nickname']}
-        \n\n
-        """
-        )
+    createSignagePDF(victims.loc[0, :])
 
 
 if __name__ == "__main__":
