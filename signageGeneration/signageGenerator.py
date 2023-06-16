@@ -7,74 +7,65 @@ from nameparser import HumanName
 import time
 
 
-def createSignagePDF(row):
+def victimData(row: pd.Series):
     name_info = HumanName(row["Name"])
+    origin_info = ', '.join([sli for sli in (row.loc[['Town/City', 'Province/State', 'Country']]) if pd.notna(sli)])
+    placeRef = {
+        'WTC': 'World Trade Center',
+        'UA175': 'United Airlines Flight 175',
+        'UA93': 'United Airlines Flight 93',
+        'AA11': 'American Airlines Flight 11',
+        'AA77': 'American Airlines Flight 11',
+        'Pentagon': 'Pentagon'
+    }
+
+
 
     data = {
-        "FIRST_NAME": f"{name_info['first']}",
-        "MIDDLE_NAME": f"{name_info['middle']}",
-        "LAST_NAME": f"{name_info['last']} {' '.join(name_info['suffix'])}",
-        "AGE": row["Age"],
-        "ORIGIN": f"{row['Town/City']}, {row['Country']}"
-        if (len(row["Town/City"]) > 0)
-        else f"{row['Country']}",
+        "FIRST": f"{name_info['first']}",
+        "MIDDLE": f"{name_info['middle']}",
+        "LAST": f"{name_info['last']} {''.join(name_info['suffix'])}",
+        "AGE": f"Aged {row['Age']}",
+        "ORIGIN": origin_info,
         "JOB": f"{row['Job']}".title(),
-        "PLACE": f"{row['Place']}",
+        "PLACE": f"{placeRef[row['Place']]}",
     }
-    signage = r"""
-            \documentclass{article}
-            \usepackage{tikz}
-            \usetikzlibrary{calc}
+    for key in data:
+        data[key] = f'{data[key]}'.strip()
 
-            \usepackage{fontspec}
-            \usepackage{xcolor}
-            \usepackage{pagecolor}
-
-            \setmainfont{CrimsonText-Regular}
-            \pagecolor{white}
-            \color{black}
-
-            \begin{document}
-            \begin{tikzpicture}[overlay, remember picture]
-            \draw[line width=2pt] ($(current page.north west)+(1cm,-1cm)$) rectangle ($(current page.south east)+(-1cm,1cm)$);
-            \end{tikzpicture}
-            \thispagestyle{empty}
-            \begin{center}
-            \vspace{1.5cm}
-            {\fontsize{100pt}{120pt}\selectfont %(FIRST_NAME)s}\\
-            \vspace{1cm}
-            {\fontsize{40pt}{48pt}\selectfont %(MIDDLE_NAME)s}\\
-            \vspace{1cm}
-            {\fontsize{100pt}{120pt}\selectfont %(LAST_NAME)s}\\
-            \vspace{2cm}
+    #print(data)
+    return data
 
 
-            {\fontsize{36pt}{43.2pt}\selectfont Aged %(AGE)s}\\
-            \vspace{0.25cm}
-            {\fontsize{36pt}{43.2pt}\selectfont %(ORIGIN)s}\\
-            \vspace{2cm}
 
+def createTEX(data: dict):
+    # get template
+    tempTEX = ''
+    with open('./signageGeneration/template.tex', 'r') as f:
+        tempTEX = f.read()
+        f.close()
+    #print(tempTEX)
 
-            {\fontsize{24pt}{28.8pt}\selectfont %(JOB)s}\\
-            \vspace{0.25cm}
-            {\fontsize{24pt}{28.8pt}\selectfont %(PLACE)s}
-            \end{center}
-            \end{document}
-            """
+    # change template
+    for key in data:
+        tempTEX = tempTEX.replace(key, data[key])
 
-    signage = signage % data
-
+    # save output
     # fmt: off
     with open("./signageGeneration/signageOutput/document.tex", "w",) as f:
-        f.write(signage)
+        f.write(tempTEX)
         f.close()
     # fmt: on
+
+def createSignagePDF(row):
+    
+    
 
     # janky asl but it's too late at night for me to look into the PATH and environment when this works
     # cmd = r"C:\Users\lucas\AppData\Local\Programs\MiKTeX\miktex\bin\x64\xelatex.exe output.tex"
     # proc = subprocess.Popen(cmd, shell=True, env=os.environ)
     # proc.communicate()
-    time.sleep(0.5)
+
     output_dir = "signageGeneration/signageOutput"
     command = f"xelatex -jobname=result -output-directory={output_dir} ./signageOutput/document.tex"
 
@@ -83,20 +74,6 @@ def createSignagePDF(row):
 
     # DONT WIPE OUTPUT AUX --> causes border to become off centered on next render
     # os.unlink('output.aux')
-
-
-def displayName(info, name):
-    print(name) if name != None else print()
-    print(
-        f"""
-    First: {info['first']}
-    Middle: {info['middle']}
-    Last: {info['last']}
-    Suffix: {info['suffix']}
-    Nickname: {info['nickname']}
-    \n\n
-    """
-    )
 
 
 def main():
@@ -109,7 +86,10 @@ def main():
     """
 
     victims = pd.read_csv("./data/2001.csv")
-    createSignagePDF(victims.loc[0, :])
+
+    
+
+    createTEX(victimData(victims.sample(1).iloc[0, :]))
 
 
 if __name__ == "__main__":
