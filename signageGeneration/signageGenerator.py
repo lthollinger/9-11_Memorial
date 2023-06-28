@@ -36,8 +36,10 @@ def victimData(row: pd.Series):
     }
     for key in data:
         data[key] = f"{data[key]}".strip()
+        if len(data[key]) == 0:
+            data[key] = " "
 
-    print(data)
+    # print(data)
     return data
 
 
@@ -62,8 +64,21 @@ def createTEX(data: dict, templatePath, outputPath):
 
 
 def createSignagePDF(row):
+    """
+    How this works:
+
+    calls createTEX() to create a "document.tex" file with a given user's data at "docPath"
+
+    calls xelatex from terminal to convert the document.tex to a pdf at signageOutput
+
+    moves and renames the pdf in signageOutput to signageStorage
+
+    end.
+
+    """
     #
-    docPath = "./signageGeneration/signageOutput/document.tex"
+    docPath = f"./signageGeneration/signageOutput/{row.name}.tex"
+    docPath = f"./signageGeneration/signageOutput/document.tex"
     createTEX(
         victimData(row),
         templatePath="./signageGeneration/template.tex",
@@ -71,16 +86,18 @@ def createSignagePDF(row):
     )
 
     output_dir = "./signageGeneration/signageOutput"
-    command = f"xelatex -jobname=result -output-directory={output_dir} {docPath}"
+    command = f"xelatex -jobname=result -halt-on-error -output-directory={output_dir} {docPath}"
 
+    # print("Starting")
     proc = subprocess.Popen(command)
     proc.communicate()
+    # print("Ending")
 
-    print(f"\n\n\nProcessed pdf for {row['Name']}\n\n\n")
+    # print(f"\n\n\nProcessed pdf for {row['Name']}\n\n\n")
 
-    os.rename(
+    os.replace(
         output_dir + "/result.pdf",
-        f"./signageGeneration/signageStorage/{random.randint(0, 1000)}.pdf",
+        f"./signageGeneration/signageStorage/{row.name}.pdf",
     )
 
 
@@ -95,12 +112,16 @@ def main():
 
     victims = pd.read_csv("./data/2001.csv")
 
-    # divide by zero error
+    # divide by zero error FIXED
     # createSignagePDF(victims.iloc[20, :])
 
+    # createSignagePDF(victims.iloc[2090, :])
+
     # unicode / spanish characters error (remove ~n)
-    # createSignagePDF(victims.iloc[628, :])
-    # [createSignagePDF(row) for i, row in victims.iloc[0:3, :].iterrows()]
+    createSignagePDF(victims.iloc[628, :])
+    createSignagePDF(victims.iloc[379, :])
+
+    # [createSignagePDF(row) for i, row in victims.iloc[0:20, :].iterrows()]
 
 
 if __name__ == "__main__":
