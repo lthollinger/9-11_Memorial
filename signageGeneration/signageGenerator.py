@@ -31,7 +31,7 @@ def victimData(row: pd.Series):
         "LAST": f"{name_info['last']} {''.join(name_info['suffix'])}",
         "AGE": f"Aged {row['Age']}",
         "ORIGIN": origin_info,
-        "JOB": f"{row['Job']}, {row['Employer']}".title(),
+        "JOB": f"{row['Job'] if pd.notna(row['Job']) else 'Employee'}, {row['Employer']}".title(),
         "PLACE": f"{placeRef[row['Place']]}",
     }
     for key in data:
@@ -57,7 +57,7 @@ def createTEX(data: dict, templatePath, outputPath):
 
     # save output
     # fmt: off
-    with open(outputPath, "w",) as f:
+    with open(outputPath, "w", encoding='utf-8') as f:
         f.write(tempTEX)
         f.close()
     # fmt: on
