@@ -18,5 +18,5 @@ for root, dirs, files in os.walk(rootDir, topdown=False):
         # print(pages)
 pages.sort(key=int)
 pages = [os.path.join(rootDir, f"{page}.pdf") for page in pages]
-print(pages)
+# print(pages)
 collatePages(pages)

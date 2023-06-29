@@ -7,6 +7,14 @@ import shutil
 import random
 
 
+def addError(idx):
+    idx = str(idx)
+    with open("errors.txt", "a") as f:
+        f.writelines(["\n", idx])
+        f.close()
+    return 0
+
+
 def victimData(row: pd.Series):
     name_info = HumanName(row["Name"])
     origin_info = ", ".join(
@@ -48,6 +56,7 @@ def victimData(row: pd.Series):
     }
     for key in data:
         data[key] = f"{data[key]}".strip()
+        data[key] = data[key].replace("&", "\\&")
         if len(data[key]) == 0:
             data[key] = " "
 
@@ -107,10 +116,14 @@ def createSignagePDF(row):
 
     # print(f"\n\n\nProcessed pdf for {row['Name']}\n\n\n")
 
-    os.replace(
-        output_dir + "/result.pdf",
-        f"./signageGeneration/signageStorage/{row.name}.pdf",
-    )
+    try:
+        os.replace(
+            output_dir + "/result.pdf",
+            f"./signageGeneration/signageStorage/{row.name}.pdf",
+        )
+    except:
+        exit(-1)
+        addError(row.name)
 
 
 def main():
@@ -124,15 +137,30 @@ def main():
 
     victims = pd.read_csv("./data/2001.csv")
 
-    # divide by zero error FIXED
-    # createSignagePDF(victims.iloc[20, :])
+    # errorlines = []
+    # with open("errors.txt", "r") as f:
+    #     for line in f:
+    #         errorlines.append(line[:-1])
+    #     f.close()
 
-    # createSignagePDF(victims.iloc[2090, :])
+    # [createSignagePDF(victims.iloc[int(line), :]) for line in errorlines]
 
-    # unicode / spanish characters error (remove ~n)
-    # createSignagePDF(victims.iloc[302, :])
+    # [createSignagePDF(row) for i, row in victims.iloc[450:455, :].iterrows()]
 
-    [createSignagePDF(row) for i, row in victims.iloc[:, :].iterrows()]
+    rootDir = "./signageGeneration/signageStorage"
+    pages = []
+    for root, dirs, files in os.walk(rootDir, topdown=False):
+        for name in files:
+            pages.append(name[:-4])
+
+    pages.sort(key=int)
+    # print(pages)
+    print(len(pages))
+    for i in range(2977):
+        print(f"{i}   {pages[i]}")
+
+    # 2955
+    # createSignagePDF(victims.iloc[2955, :])
 
 
 if __name__ == "__main__":
