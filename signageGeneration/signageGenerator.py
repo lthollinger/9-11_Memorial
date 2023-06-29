@@ -16,6 +16,9 @@ def victimData(row: pd.Series):
             if pd.notna(sli)
         ]
     )
+    employment_info = ", ".join(
+        [sli.title() for sli in (row.loc[["Job", "Employer"]]) if pd.notna(sli)]
+    )
     placeRef = {
         "WTC": "World Trade Center",
         "UA175": "United Airlines Flight 175",
@@ -31,7 +34,7 @@ def victimData(row: pd.Series):
         "LAST": f"{name_info['last']} {''.join(name_info['suffix'])}",
         "AGE": f"Aged {row['Age']}",
         "ORIGIN": origin_info,
-        "JOB": f"{row['Job'] if pd.notna(row['Job']) else 'Employee'}, {row['Employer']}".title(),
+        "JOB": employment_info,
         "PLACE": f"{placeRef[row['Place']]}",
     }
     for key in data:
@@ -118,7 +121,6 @@ def main():
     # createSignagePDF(victims.iloc[2090, :])
 
     # unicode / spanish characters error (remove ~n)
-    createSignagePDF(victims.iloc[628, :])
     createSignagePDF(victims.iloc[379, :])
 
     # [createSignagePDF(row) for i, row in victims.iloc[0:20, :].iterrows()]

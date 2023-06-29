@@ -11,7 +11,7 @@ https://www.nyc.gov/site/nypd/about/memorials/9-11-tribute.page
 VALID
 """
 
-police_ref = pd.read_csv("./data/policeReference.csv")
+police_ref = pd.read_csv("./data/oldData/policeReference.csv")
 victims = pd.read_csv("./data/2001.csv")
 
 
@@ -38,14 +38,14 @@ def rectifyName(name):
         "Chief",
         "Lt.",
         "Capt.",
-        #"Jr.",
+        # "Jr.",
         "Paramedic",
-        #"I",
-        #II",
-        #"III",
-        #"IV",
-        #"Jr",
-        #"Sr",
+        # "I",
+        # II",
+        # "III",
+        # "IV",
+        # "Jr",
+        # "Sr",
     ]
     arr = [c for c in arr if c not in removetags]
     arr = [i.title() for i in arr]
@@ -61,7 +61,7 @@ names = [rectifyName(name) for name in police_ref["Name"]]
 
 police_ref = police_ref.combine_first(pd.DataFrame(names))
 
-police_ref.to_csv("./data/fullPoliceRef.csv", index=False)
+# police_ref.to_csv("./data/fullPoliceRef.csv", index=False)
 
 
 for i, row in police_ref.iterrows():
@@ -78,7 +78,7 @@ for i, row in police_ref.iterrows():
             print(f'\n\nCheck: {row["Name"]}')
             print(subset)
     if len(subset) < 1:
-        print(f"ERROR: {row['Name']}")
+        print(f"{i} ERROR: {row['Name']}")
 
 
 """

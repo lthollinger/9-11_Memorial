@@ -6,7 +6,7 @@ VICTIMS_MAIN = pd.read_csv("./data/2001.csv")
 VICTIMS_MAIN["Police"] = False
 
 victims = VICTIMS_MAIN.copy(deep=False)
-officers = pd.read_csv("./data/fullPoliceRef.csv")
+officers = pd.read_csv("./data/oldData/fullPoliceRef.csv")
 
 
 victims["Name"] = [name.lower() for name in victims["Name"]]
@@ -40,7 +40,7 @@ for i, row in officers.iterrows():
             continue
     else:
         nameindex = subset.index[0]
-    print(nameindex)
-    VICTIMS_MAIN.loc[nameindex, "Police"] = True
 
-VICTIMS_MAIN.to_csv("./data/testList.csv", index=False)
+    print(row)
+    print(subset)
+    print("\n\n\n")
