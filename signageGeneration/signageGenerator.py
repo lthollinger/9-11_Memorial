@@ -126,6 +126,11 @@ def createSignagePDF(row):
         addError(row.name)
 
 
+def doLines(errorlines):
+    victims = pd.read_csv("./data/2001.csv")
+    [createSignagePDF(victims.iloc[int(line), :]) for line in errorlines]
+
+
 def main():
     """
     TODO
@@ -134,33 +139,31 @@ def main():
 
     Save file to specific location
     """
+    # NOTE Reads errored lines from the error.txt
+    # NOTE the second round of fucked up ones are the normal ones plus one
+    errorlines = []
+    with open("errors.txt", "r") as f:
+        for line in f:
+            errorlines.append(int(line[:-1]))
+        f.close()
 
-    victims = pd.read_csv("./data/2001.csv")
+    errorlines = [line + 1 for line in errorlines]
+    print(errorlines)
+    doLines([2956])
+    # doLines(errorlines)
 
-    # errorlines = []
-    # with open("errors.txt", "r") as f:
-    #     for line in f:
-    #         errorlines.append(line[:-1])
-    #     f.close()
+    # NOTE Verifies the number of pages
+    # rootDir = "./signageGeneration/signageStorage"
+    # pages = []
+    # for root, dirs, files in os.walk(rootDir, topdown=False):
+    #     for name in files:
+    #         pages.append(name[:-4])
 
-    # [createSignagePDF(victims.iloc[int(line), :]) for line in errorlines]
-
-    # [createSignagePDF(row) for i, row in victims.iloc[450:455, :].iterrows()]
-
-    rootDir = "./signageGeneration/signageStorage"
-    pages = []
-    for root, dirs, files in os.walk(rootDir, topdown=False):
-        for name in files:
-            pages.append(name[:-4])
-
-    pages.sort(key=int)
-    # print(pages)
-    print(len(pages))
-    for i in range(2977):
-        print(f"{i}   {pages[i]}")
-
-    # 2955
-    # createSignagePDF(victims.iloc[2955, :])
+    # pages.sort(key=int)
+    # # print(pages)
+    # print(len(pages))
+    # for i in range(2977):
+    #     print(f"{i}   {pages[i]}")
 
 
 if __name__ == "__main__":
