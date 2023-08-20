@@ -7,19 +7,17 @@ victims = pd.read_csv("./data/2001.csv")
 
 # [print(f"\n\n{v}\nName:{v.name}") for i, v in victims.head(5).iterrows()]
 
-red = [1, 2, 3, 5, 7]
-red = [str(t) for t in red]
-
-white = []
-
-blue = []
-
 
 def appendID(color, id):
     id += 1
     print(f"placing {id} in color {color}")
     with open(f"./signageGeneration/{color}.txt", "a") as f:
         f.write(f"{id},")
+
+
+def clearTXT(color):
+    with open(f"./signageGeneration/{color}.txt", "w") as f:
+        f.write(f"")
 
 
 """
@@ -43,10 +41,11 @@ save the array
 slots = {"red": 1256, "white": 1116, "blue": 644}
 
 # reset txts
+[clearTXT(key) for key in slots]
+
 
 # shuffles people around
 victims = victims.sample(frac=1)
-
 
 for i, victim in victims.iterrows():
     print(victim["Name"])

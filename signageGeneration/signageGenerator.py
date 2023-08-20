@@ -122,7 +122,8 @@ def createSignagePDF(row):
             f"./signageGeneration/signageStorage/{row.name}.pdf",
         )
     except:
-        exit(-1)
+        # exit(-1)
+        print("ADDING ERROR!")
         addError(row.name)
 
 
@@ -149,21 +150,25 @@ def main():
 
     errorlines = [line + 1 for line in errorlines]
     print(errorlines)
-    doLines([2956])
+    # doLines([62])
     # doLines(errorlines)
 
-    # NOTE Verifies the number of pages
-    # rootDir = "./signageGeneration/signageStorage"
-    # pages = []
-    # for root, dirs, files in os.walk(rootDir, topdown=False):
-    #     for name in files:
-    #         pages.append(name[:-4])
+    # victims = pd.read_csv("./data/2001.csv")
+    # for i, victim in victims.iterrows():
+    #     createSignagePDF(victim)
 
-    # pages.sort(key=int)
-    # # print(pages)
-    # print(len(pages))
-    # for i in range(2977):
-    #     print(f"{i}   {pages[i]}")
+    # NOTE Verifies the number of pages
+    rootDir = "./signageGeneration/signageStorage"
+    pages = []
+    for root, dirs, files in os.walk(rootDir, topdown=False):
+        for name in files:
+            pages.append(name[:-4])
+
+    pages.sort(key=int)
+    # print(pages)
+    print(len(pages))
+    for i in range(2977):
+        print(f"{i}   {pages[i]}")
 
 
 if __name__ == "__main__":
